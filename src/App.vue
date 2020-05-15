@@ -16,13 +16,18 @@
         :showAddressBar="true"
         :autoLocation="true"
       ></bm-geolocation>
+      <bm-local-search
+        :keyword="ori"
+        :auto-viewport="true"
+        :location="des"
+      ></bm-local-search>
     </baidu-map>
     <v-card class="mx-auto" max-width="344" id="searchCard" :elevation="10">
       <v-card-text>
         <v-row>
           <v-col cols="12" md="6">
             <v-text-field
-              v-model="keyword"
+              v-model="ori"
               label="当前地点"
               required
             ></v-text-field>
@@ -30,7 +35,7 @@
 
           <v-col cols="12" md="6">
             <v-text-field
-              v-model="location"
+              v-model="des"
               label="目标地点"
               required
             ></v-text-field>
@@ -46,9 +51,17 @@
       </v-card-actions>
     </v-card>
     <v-card id="resultCard" class="mx-auto" max-width="1000" :elevation="10">
-     <v-card-text>
-       {{testResult1}}
-     </v-card-text>
+      <v-card-text>
+        {{
+          testResult1.code + " + " + testResult1.name + " + " + testResult1.msg
+        }}<br />
+        {{
+          testResult2.code + " + " + testResult2.name + " + " + testResult2.msg
+        }}<br />
+        {{
+          testResult3.code + " + " + testResult3.name + " + " + testResult3.msg
+        }}<br />
+      </v-card-text>
     </v-card>
   </v-app>
 </template>
@@ -82,26 +95,27 @@ export default {
 
   data: () => ({
     hello: "hello world",
-    keyword: "广州市珠江医院",
-    location: "广州市南方医院",
+    ori: "广州市珠江医院",
+    des: "广州市南方医院",
     searchResult: testResultData,
     helloworld: "http://192.168.50.117:5000/",
     routeWay1: "http://192.168.50.117:5000/get_way_1_route",
     routeWay2: "http://192.168.50.117:5000/get_way_2_route",
     routeWay3: "http://192.168.50.117:5000/get_way_3_route",
-    testResult1: null,
-    testResult2: null,
-    testResult3: null,
+    testResult1: {},
+    testResult2: {},
+    testResult3: {},
   }),
 
   methods: {
     searchRoute() {
-      // 1
-      let params = new URLSearchParams();
-      params.append("ori", this.location);
-      params.append("des", this.keyword);
+      this.searchRouteWay1();
+      this.searchRouteWay2();
+      this.searchRouteWay3();
+    },
+    async searchRouteWay1() {
       axios
-        .get(this.helloworld)
+        .get(this.routeWay1 + "?ori=" + this.ori + "&des=" + this.des)
         .then((response) => {
           console.log(response.data);
           this.testResult1 = response.data;
@@ -109,27 +123,29 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-      // 2 ----------------------------------
-      // axios
-      //   .get(this.routeWay2, params)
-      //   .then((response) => {
-      //     console.log(response.data);
-      //     this.testResult2 = response.data;
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
-      // // 3----------------
-      // axios
-      //   .get(this.routeWay3, params)
-      //   .then((response) => {
-      //     console.log(response.data);
-      //     this.testResult3 = response.data;
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
     },
+    async searchRouteWay2() {
+      axios
+        .get(this.routeWay2 + "?ori=" + this.ori + "&des=" + this.des)
+        .then((response) => {
+          console.log(response.data);
+          this.testResult2 = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    async searchRouteWay3() {
+      axios
+        .get(this.routeWay3 + "?ori=" + this.ori + "&des=" + this.des)
+        .then((response) => {
+          console.log(response.data);
+          this.testResult3 = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   },
 };
 </script>
